@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Food;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TestController extends Controller
 {
@@ -34,5 +36,41 @@ class TestController extends Controller
     {
         $page = ucfirst($page);
         return "<h1>Portal Manajemen: Daftar $page</h1>";
+    }
+
+    public function testQuery()
+    {
+        // dd();
+        // RAW
+        $data = DB::select("select * from foods where price > 50000");
+
+        // QUERY BUILDER
+        $data = DB::table('foods')
+                    ->where('price', '>', 50000)
+                    ->get();
+
+        // ELOQUENT
+        $data = Food::query()
+                    ->where('price', '>', 50000)
+                    ->get();
+
+        // LIMIT and OFFSET
+        $data = Food::query()
+                    ->offset(10)
+                    ->limit(5)
+                    ->get();
+
+        // GROUP BY
+        $data = Food::select(["category_id", DB::raw('count(*) as count')])
+                    ->groupBy("category_id")
+                    ->having("count", ">", 15)
+                    ->get();
+
+        // INNER JOIN
+        $data = Food::join('categories', 'foods.category_id', '=', 'categories.id')
+                    ->select(["foods.name as food_name", "foods.price", "categories.name as category"])
+                    ->get();
+
+        return response()->json($data);
     }
 }
