@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TestController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\FoodController;
 
 /*
 |--------------------------------------------------------------------------
@@ -84,25 +87,44 @@ Route::get('/home', function() {
 });
 
 // ===== PRAKTIK 2 =====
-Route::get("/welcome", function() {
-    $link = route("order");
-    return "<h1>Splash screen: HealthyFood<br /><br /><a href='$link'>Start Order</a></h1>";
-});
-Route::get("/before_order", function() {
-    $linkDinein = route("menu", ['type' => 'dinein']);
-    $linkTakeaway = route("menu", ['type' => 'takeaway']);
-    return "<a href='$linkDinein'>Dine In</a><br /><a href='$linkTakeaway'>Take Away</a>";
-})->name("order");
+// Route::get("/welcome", function() {
+//     $link = route("order");
+//     return "<h1>Splash screen: HealthyFood<br /><br /><a href='$link'>Start Order</a></h1>";
+// });
+Route::get("/welcome", [TestController::class, 'welcome'])
+    ->name("welcome");
 
-Route::get("/menu/{type}", function($type) {
-    $type = strtolower($type);
-
-    if (in_array($type, ['dinein', 'takeaway'])) {
-        return view("menu", ['type' => $type]);
-    }
+// Route::get("/before_order", function() {
     
-    abort(404);
-})->name("menu");
+// })->name("order");
+
+Route::get("/before-order", [TestController::class, "beforeOrder"])
+    ->name("order");
+
+// Route::get("/menu/{type}", function($type) {
+//     $type = strtolower($type);
+
+//     if (in_array($type, ['dinein', 'takeaway'])) {
+//         return view("menu", ['type' => $type]);
+//     }
+    
+//     abort(404);
+// })->name("menu");
+
+Route::get("/menu/{type}", [TestController::class, "menu"])
+    ->name("menu");
+
+// Route::get('/admin/{page}', function($page) {
+//     $page = ucfirst($page);
+//     return "<h1>Portal Manajemen: Daftar $page</h1>";
+// })->name('admin.page');
+
+Route::get("/admin/{page}", [TestController::class, "admin"])
+    ->name("admin.page");
+
+Route::resource("categories", CategoryController::class);
+
+Route::resource('foods', FoodController::class);
 
 
 
