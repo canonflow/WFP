@@ -129,6 +129,6 @@ Route::resource('foods', FoodController::class);
 Route::get('/test', [TestController::class, 'testQuery']);
 
 
-
+Route::get("/category/showTotalFoods", [CategoryController::class, 'showTotalFoods']);
 
 

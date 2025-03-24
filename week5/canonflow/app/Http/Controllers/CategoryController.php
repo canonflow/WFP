@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
@@ -39,6 +41,30 @@ class CategoryController extends Controller
     {
         // /categories/{id}
         return "INI SHOW $id";
+    }
+
+    public function showTotalFoods()
+    {
+
+        // ==== CARA 1 =====
+        // $totalFoods = Category::leftJoin('foods', 'categories.id', '=', 'foods.category_id')
+        //                     ->select(["categories.name as category", DB::raw('ifnull(count(foods.name), 0) as total')])
+        //                     ->groupBy('category')
+        //                     ->get();
+
+        // return $totalFoods;
+
+        // ===== CARA 2 =====
+        $totalFoods = Category::with('foods')->get();
+        
+        $temp = [];
+
+        foreach($totalFoods as $f) {
+            $temp[] = ['category' => $f->name, 'total' => count($f->foods)];
+        }
+
+        // return $totalFoods;
+        return $temp;
     }
 
     /**
