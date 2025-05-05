@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Food;
 use Illuminate\Http\Request;
 
@@ -24,7 +25,8 @@ class FoodController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::all();
+        return view('foods.create', compact('categories'));
     }
 
     /**
@@ -32,7 +34,23 @@ class FoodController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $name = $request->get('food');
+        $nutritional_fact = $request->get('nutritional_fact');
+        $description = $request->get('description');
+        $price = floatval($request->get('price'));
+        $category_id = $request->get('category_id');
+
+        Food::create([
+            'name' => $name,
+            'nutritional_fact' => $nutritional_fact,
+            'description' => $description,
+            'price' => $price,
+            'category_id' => $category_id
+        ]);
+
+        return redirect()
+            ->route('foods.index')
+            ->with('status', 'New food added successfully');
     }
 
     /**

@@ -25,7 +25,8 @@ class CategoryController extends Controller
     public function create()
     {
         // /categories/create
-        return "INI FORM CREATE";
+        return view("categories.create");
+        // return "INI FORM CREATE";
     }
 
     /**
@@ -33,7 +34,24 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        
+        $category = $request->get('category');
+        $image = $request->file('image');
+
+        $imageName = strtolower($category) . "." . $image->getClientOriginalExtension();
+        $image->storeAs(
+            'categories',
+            $imageName,
+            'public'
+        );
+
+        Category::create([
+            'name' => $request->get('category'),
+            'image' => $imageName
+        ]);
+
+        return redirect()
+            ->route('categories.index')
+            ->with('status', 'New category added successfully!');
     }
 
     /**

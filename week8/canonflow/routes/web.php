@@ -135,5 +135,5 @@ Route::get('/test', [TestController::class, 'testQuery']);
 
 Route::get("/category/showTotalFoods", [CategoryController::class, 'showTotalFoods']);
 
-Route::post('/category/{category}/showListFoods', [CategoryController::class, 'showListFoods'])
+Route::post('/category/showListFoods/{category}', [CategoryController::class, 'showListFoods'])
     ->name('category.showListFoods');
