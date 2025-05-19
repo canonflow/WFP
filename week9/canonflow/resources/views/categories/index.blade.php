@@ -27,7 +27,14 @@
         <div class="card">
             <div class="card-body p-4">
               <div class="mb-3">
-                <a class="btn btn-warning" href="{{ route('categories.create') }}">New Category</a>
+                {{-- <a class="btn btn-warning" href="{{ route('categories.create') }}">New Category</a> --}}
+                <button
+                  class="btn btn-warning"
+                  data-bs-toggle="modal" 
+                  data-bs-target="#addModal"
+                >
+                  New Category
+                </button>
               </div>
               @if (session()->has('status'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -165,6 +172,39 @@
         </div>
         <div class="modal-body" id="detail-body">
           
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  @endpush
+
+  {{-- MODAL ADD --}}
+  @push('modals')
+  <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="detail-title">Add New Category</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="detail-body">
+          <form action="{{ route('categories.store') }}" method="POST" class="form-group" enctype="multipart/form-data">
+            @csrf
+            <div class="mb-3">
+                <label for="lblName" class="form-label">Name</label>
+                <input type="text" class="form-control" id="lblName" placeholder="Enter category name" name="category">
+            </div>
+            <div class="mb-3">
+                <label for="lblImage" class="form-label">Image</label>
+                <input type="file" class="form-control" id="lblImage" placeholder="Enter image url" name="image">
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-primary">Submit</button>
+            </div>
+          </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
