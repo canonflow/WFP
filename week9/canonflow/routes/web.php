@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FoodController;
+use App\Models\Category;
 
 /*
 |--------------------------------------------------------------------------
@@ -133,7 +134,9 @@ Route::resource('foods', FoodController::class);
 Route::get('/test', [TestController::class, 'testQuery']);
 
 
-Route::get("/category/showTotalFoods", [CategoryController::class, 'showTotalFoods']);
+// Route::get("/category/showTotalFoods", [CategoryController::class, 'showTotalFoods']);
 
 Route::post('/category/showListFoods/{category}', [CategoryController::class, 'showListFoods'])
     ->name('category.showListFoods');
+Route::post('/categories/{category}/restore', [CategoryController::class, 'restore'])
+    ->name('categories.restore');

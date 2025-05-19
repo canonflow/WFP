@@ -75,13 +75,15 @@ class CategoryController extends Controller
         // return $totalFoods;
 
         // ===== CARA 2 =====
-        $totalFoods = Category::with('foods')->get();
+        $totalFoods = Category::withTrashed()->with('foods')->get();
         
         $temp = [];
 
         foreach($totalFoods as $f) {
-            $temp[] = ['category' => $f, 'total' => count($f->foods), 'foods' => $f->foods, 'id' => $f];
+            $temp[] = ['category' => $f, 'total' => count($f->foods), 'foods' => $f->foods, 'id' => $f, 'isDeleted' => $f->deleted_at];
         }
+
+        // dd($temp);
 
         // return $totalFoods;
         return $temp;
@@ -102,25 +104,70 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Category $category)
     {
         // /categories/{id}/edit
-        return "INI EDIT $id";
+        // return "INI EDIT $id";
+        return view('categories.edit', compact('category'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Category $category)
     {
-        //
+        $name = $request->get('category');
+        $imageName = $category->image;
+        // dd($category->image);
+        
+        // Check gambar
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+
+            $imageName = strtolower($name) . "." . $image->getClientOriginalExtension();
+            $image->storeAs(
+                'categories',
+                $imageName,
+                'public'
+            );
+        }
+
+        $category->image = $imageName;
+        $category->name = $name;
+        $category->save();
+
+        return redirect()
+            ->route('categories.index')
+            ->with('status', 'Category updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        //
+        // dd($category);
+        try {
+            $name = $category->name;
+            $category->delete();
+            return redirect()
+                ->route('categories.index')
+                ->with('status', "Category ($name) deleted successfully!");
+        } catch(\PDOException $ex) {
+            $msg = "Make sure there is no related data before delete it. Please contact Administrator to know more about it!";
+            return redirect()
+                ->route('categories.index')
+                ->with('error', $msg);
+        }
+    }
+
+    public function restore(string $category) 
+    {
+        $category = Category::withTrashed()->findOrFail($category);
+
+        $category->restore();
+        return redirect()
+                ->route('categories.index')
+                ->with('status', "Category ({$category->name}) restored successfully!");
     }
 }

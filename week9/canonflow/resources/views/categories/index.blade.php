@@ -35,6 +35,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
               @endif
+              @if (session()->has('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session()->get('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              @endif
                 <table class="table table-striped">
                     <thead class="thead-dark">
                       <tr>
@@ -43,6 +49,8 @@
                         <th scope="col">Name</th>
                         <th scope="col">Number of Food</th>
                         <th scope="col">List of Food Name</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -96,6 +104,45 @@
                               >
                                 Details
                               </button>
+                            </td>
+                            <td>
+                              @if (is_null($category['isDeleted']))
+                                <span class="badge bg-info text-dark">Not Deleted</span>
+                              @else
+                                <span class="badge bg-danger text-white">Deleted</span>
+                              @endif
+                            </td>
+                            <td class="d-flex gap-3">
+                              <a
+                                class="btn btn-warning"
+                                href="{{ route('categories.edit', ['category' => $category['category']->id]) }}"
+                              >
+                                Update
+                              </a>
+                              @if (is_null($category['isDeleted']))
+                                <form method="POST" action="{{ route('categories.destroy', ['category' => $category['category']->id]) }}">
+                                  @csrf
+                                  @method("DELETE")
+                                  <input
+                                    type="submit"
+                                    value="Delete"
+                                    class="btn btn-danger" 
+                                    onclick="return confirm('Are you sure to delete {{ $category['category']->id }} - {{ $category['category']->name }}?')"
+                                  >
+                                  </input>
+                                </form>
+                              @else
+                                <form method="POST" action="{{ route('categories.restore', ['category' => $category['category']->id]) }}">
+                                  @csrf
+                                  <input
+                                    type="submit"
+                                    value="Restore"
+                                    class="btn btn-secondary" 
+                                    onclick="return confirm('Are you sure to restore {{ $category['category']->id }} - {{ $category['category']->name }}?')"
+                                  >
+                                  </input>
+                                </form>
+                              @endif
                             </td>
                           </tr>   
                         @endforeach
